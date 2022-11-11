@@ -77,7 +77,4 @@ class User(Model):
         Returns:
             _type_: _description_
         """
-        regExs = (r"\(\w{3}\) \w{3}\-\w{4}", r"^\w{3}\-\w{4}$")
-        if not re.search(regExs[0], v):
-            return ValueError("not match")
         return v
