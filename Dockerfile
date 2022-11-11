@@ -7,7 +7,8 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 RUN apt-get update
-RUN apt-get install -y git,python3-gdbm
+RUN apt-get install -y git
+RUN apt-get install -y python-gdbm
 # install dependencies
 RUN pip install --upgrade pip && pip install uvicorn
 COPY ./requirements.txt /app/requirements.txt
