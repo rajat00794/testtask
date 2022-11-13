@@ -63,7 +63,9 @@ class DataBaseManager:
             )
             if data:
                 for key, val in update.items():
+                    print(data,"hjjyujy")
                     setattr(data, key, val)
+                    print("gtgtgtrtrt","hjjyujy")
                     await self.save(data)
             else:
                 raise Exception("object not found")
@@ -71,7 +73,10 @@ class DataBaseManager:
             data = await self.get_one(instance, value)
             if data:
                 for k, vals in update.items():
-                    setattr(data, k, vals)
+                    if hasattr(data,k):
+                        setattr(data,k,vals)
+                    else:
+                        print(f"attribute not found {k}")
                     await self.save(data)
         return data
 

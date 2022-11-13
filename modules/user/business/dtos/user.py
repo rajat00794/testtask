@@ -25,7 +25,7 @@ class User(Model):
     email: str
     password: str
     phone: str
-    verfiy: Optional[bool] = False
+    verfiy: bool = False
     role: Optional[str] = None
 
     @validator("email")

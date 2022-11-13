@@ -53,7 +53,7 @@ async def user_create(body: User):
     responses={"200": Response},
     description="User get all provide all user and detail about User",
 )
-
+@permission("user_getall")
 async def user_getall():
     """This API get all User"""
     service = obj_graph.provide(UserServices)
@@ -217,7 +217,7 @@ async def role_get(path: Path):
 
 @user_bp.post(
     "user/password_reset/",
-    responses={"200": Response},
+    responses={"201": Response},
     description="User reset_password provide a token and refresh token for using any API permission of",
 )
 async def password_reset(body: ResetPassword):
@@ -237,8 +237,7 @@ async def password_reset(body: ResetPassword):
         body=f"here is your password reset link: {request.base_url}/user/password_confirm/{Token().generate_acess_token(res)}",
     )
     awt = await email_sender(send_mail, **data)
-    print(awt)
-    return ResponseHandler(request, dict(awt="mailsend")).response(206), 206
+    return ResponseHandler(request, res).response(206), 206
 
 
 @user_bp.put(
@@ -253,7 +252,8 @@ async def reset_password_confirm(path: Path, body: ResetPassword):
         data = service.update(User, res, body.dict())
     except Exception as e:
         return e, 404
-    awt = await data
+    print(data)
+    awt = data
     return ResponseHandler(request, awt).response(206), 206
 
 
@@ -266,24 +266,24 @@ async def send_otp_email_phone(body: OtpSender):
     otp = otp_generator()
     data = Otp(otp=otp, user_id=body.user_id, created_at=datetime.now())
     obj = obj_graph.provide(DataBaseManager)
-    da = obj.create(data)
-    data = dict(
-        subject=f"One time password for user{body.user_id}",
-        recipients=[body.email],
-        body=f"your one time password is {otp}",
-    )
-    awt = await email_sender(send_mail, **data)
-    print(awt)
-    res = {}
-    res["email"] = awt
+    da = await obj.save(data)
+    # data = dict(
+    #     subject=f"One time password for user{body.user_id}",
+    #     recipients=[body.email],
+    #     body=f"your one time password is {otp}",
+    # )
+    # awt = await email_sender(send_mail, **data)
+    # print(awt)
+    # res = {}
+    # res["email"] = awt
     try:
         send_phone_otp(body.phone)
     except Exception as a:
         res["phone"] = a
-    return ResponseHandler(request, res).response(200), 200
+    return ResponseHandler(request, da).response(200), 200
 
 
-@user_bp.post("user/verifyotp", responses={"200": Response}, description="otp verify")
+@user_bp.post("user/verifyotp/", responses={"201": Response}, description="otp verify")
 async def verify_otp_phone_email(body: OtpVerify):
     """_summary_
 
@@ -294,13 +294,14 @@ async def verify_otp_phone_email(body: OtpVerify):
         _type_: _description_
     """
     obj = obj_graph.provide(DataBaseManager)
-    da = obj.get_one(Otp, user_id=body.user_id)
+    print(type(body.user_id),"dddd")
+    da = await obj.get_one_email(Otp, dict(user_id=body.user_id))
+    print(da)
     ltime = da.created_at + timedelta(seconds=da.expire_time)
     if ltime > datetime.now():
         if da.otp == body.otp:
-            us = obj.update_one(User, dict(id=body.user_id), dict(verify=True))
-            das = obj.delete_one(Otp, dict(user_id=body.user_id))
-            print(f"&&&&&&&&&&&&", das, f"%%%%%%%%%%%%%%%%%%%")
+            us = await obj.update_one(User, dict(id=body.user_id), dict(verfiy=True))
+            das = await obj.delete_one(Otp, dict(id=da.id))
             return ResponseHandler(request, us).response(206), 206
         else:
             return ResponseHandler(request, dict(otp="invalid otp")).response(401), 401

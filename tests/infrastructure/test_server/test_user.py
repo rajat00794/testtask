@@ -28,7 +28,7 @@ def test_user_get():
         login = test_client.post(
             f"/api/user/login/",
             content_type="application/json",
-            data=json.dumps(dict(email="man1@d.com", password="Rajat322")),
+            data=json.dumps(dict(email="rajatm@thoughtwin.com", password="Rajat322")),
         )
         token = json.loads(login.data)["data"]["access_token"]
         response = test_client.get(
@@ -39,7 +39,46 @@ def test_user_get():
         )
         assert response.status_code == 200
         objid = json.loads(response.data)["data"][0]["id"]
-        response = test_client.get(
-            f"/api/user/get/{objid}", content_type="application/json"
+        # response = test_client.get(
+        #     f"/api/user/get/{objid}", headers=dict(
+        #         content_type="application/json", Authorization=f"Bearer {token}"
+        #     ),
+        # )
+        # assert response.status_code == 308
+        # print(response.data,"dwdwdwdwdw")
+        objid = json.loads(response.data)["data"][0]["email"]
+        print(objid,"DCD")
+        response = test_client.post(
+            f"/api/user/password_reset/", headers=dict(
+                content_type="application/json", Authorization="Bearer {}".format(token)
+            ),json=json.dumps(dict(email=objid)))
+        assert response.status_code == 206
+        # objid = json.loads(response.data)["data"]["id"]
+        # password="test123"
+        # response = test_client.put(
+        #     f"/api/user/password_confirm/{objid}",headers=dict(
+        #         content_type="application/json", Authorization="Bearer {}".format(token)
+        #     ),json=json.dumps(dict(password=password))
+        # )
+        # print(response.data)
+        # assert response.status_code == 206
+        objid = json.loads(response.data)["data"]
+        response = test_client.post(
+            f"/api/user/sendotp/",headers=dict(
+                content_type="application/json", Authorization="Bearer {}".format(token)
+            ),json=json.dumps(dict(email=objid['email'],phone="8160201174",user_id=objid['id']))
         )
-        assert response.status_code == 308
+        assert response.status_code == 200
+        objid = json.loads(response.data)['data']
+        print(objid)
+        response = test_client.post(
+            f"/api/user/verifyotp/",headers=dict(
+                content_type="application/json", Authorization="Bearer {}".format(token)
+            ),json=json.dumps(dict(user_id=objid['user_id'],otp=int(objid['otp'])))
+        )
+        assert response.status_code == 206
+
+
+
+
+
