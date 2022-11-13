@@ -4,7 +4,7 @@ import json
 from typing import List
 from common_utilities.file_handler import FileUpload
 from bson.objectid import ObjectId
-
+from adaptors.mongodb.errors import Errors
 
 class DataBaseManager:
     """_summary_"""
@@ -29,6 +29,8 @@ class DataBaseManager:
         data = await self.engine.save_all(instance)
         return data
 
+    async def errors(self,msg,data,instance):
+        return Errors(error=f"{msg}{data.id}",model=instance.__class__.__name__)
     async def save(self, instance: object):
         """_summary_
 
@@ -38,8 +40,16 @@ class DataBaseManager:
         Returns:
             _type_: _description_
         """
-        data = await self.engine.save(instance)
-
+        data=None
+        if instance.unique_fields!=[]:
+            for i in instance.unique_fields:
+                data=await self.get_one_email(instance.__class__,{i:getattr(instance,i)})
+            if data is None:
+                data = await self.engine.save(instance)
+            else:
+                data = await self.errors("record already exist",data,instance)
+        else:
+            data = await self.engine.save(instance)
         return data
 
     async def update_one(self, instance: object, value: dict, update: dict):
@@ -63,9 +73,7 @@ class DataBaseManager:
             )
             if data:
                 for key, val in update.items():
-                    print(data,"hjjyujy")
                     setattr(data, key, val)
-                    print("gtgtgtrtrt","hjjyujy")
                     await self.save(data)
             else:
                 raise Exception("object not found")

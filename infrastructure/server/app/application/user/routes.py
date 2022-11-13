@@ -296,7 +296,6 @@ async def verify_otp_phone_email(body: OtpVerify):
     obj = obj_graph.provide(DataBaseManager)
     print(type(body.user_id),"dddd")
     da = await obj.get_one_email(Otp, dict(user_id=body.user_id))
-    print(da)
     ltime = da.created_at + timedelta(seconds=da.expire_time)
     if ltime > datetime.now():
         if da.otp == body.otp:

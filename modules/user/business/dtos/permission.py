@@ -1,5 +1,5 @@
 """primission model"""
-from odmantic import Model
+from odmantic import Model,Field 
 
 
 class Permission(Model):
@@ -9,5 +9,6 @@ class Permission(Model):
         Model (_type_): _description_
     """
 
-    permissionname: str
+    permissionname: str 
     permissionview: str
+    unique_fields:list=["permissionname"]

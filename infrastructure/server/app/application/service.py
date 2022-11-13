@@ -95,6 +95,7 @@ class ResponseHandler:
         Returns:
             _type_: _description_
         """
+        print(status_code,self.data,"erferferferferferfe")
         if isinstance(self.data, list):
             return Response(
                 data=[json.loads(x.json()) for x in self.data], status_code=status_code
@@ -103,7 +104,6 @@ class ResponseHandler:
             if isinstance(self.data, dict):
                 return Response(data=self.data, status_code=status_code).json()
             else:
-                print(self.data, type(self.data))
                 return Response(
                     data=json.loads(self.data.json()), status_code=status_code
                 ).json()
