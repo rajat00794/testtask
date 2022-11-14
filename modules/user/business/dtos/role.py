@@ -1,7 +1,7 @@
 """role model"""
 from typing import List
 
-from odmantic import Model,Field
+from odmantic import Model, Field
 
 
 class Role(Model):
@@ -13,4 +13,4 @@ class Role(Model):
 
     rolename: str
     permissions: List[str]
-    unique_fields:list=["rolename"]
+    unique_fields: list = ["rolename"]

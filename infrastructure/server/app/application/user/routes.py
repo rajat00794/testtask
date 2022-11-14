@@ -118,13 +118,23 @@ async def user_login(body: UserLogin):
     """This API login user"""
     service = obj_graph.provide(UserServices)
     obj = await service.get(User, objectid=dict(email=body.email))
-    print(obj)
     if obj is None:
         return (
             ResponseHandler(
-                request, {"error": "email or password is invalid"}
+                request,
+                await service.dbmanager.errors(
+                    "email or password is invalid", obj.id, User
+                ),
             ).response(400),
             400,
+        )
+    if obj.verfiy is False:
+        return (
+            ResponseHandler(
+                request,
+                await service.dbmanager.errors("phone not verified", obj.id, User),
+            ).response(401),
+            401,
         )
     if obj.email == body.email:
 
@@ -134,14 +144,15 @@ async def user_login(body: UserLogin):
                 token = Token().generate_auth_tokens(body.dict())
                 return ResponseHandler(request, token).response(200), 200
     else:
-        print("eyryri")
         return (
             ResponseHandler(
-                request, {"error": "email or password is invalid"}
+                request,
+                await service.dbmanager.errors(
+                    "email or password is invalid", obj.id, User
+                ),
             ).response(400),
             400,
         )
-    print("dueti", obj, body)
 
 
 @user_bp.get(
@@ -227,10 +238,10 @@ async def password_reset(body: ResetPassword):
         obj = await service.get(User, objectid=dict(email=body.email))
     except Exception as Ex:
         return Ex, 404
-    if obj:
+    if isinstance(obj,User):
         res = dict(email=obj.email, id=str(obj.id))
     else:
-        return ResponseHandler(request, dict(error="user not found")).response(404), 404
+        return ResponseHandler(request, service.dbmanager.errors("object not found",obj,User)).response(404), 404
     data = dict(
         subject="te",
         recipients=["rajatm@thoughtwin.com"],
@@ -294,7 +305,7 @@ async def verify_otp_phone_email(body: OtpVerify):
         _type_: _description_
     """
     obj = obj_graph.provide(DataBaseManager)
-    print(type(body.user_id),"dddd")
+    print(type(body.user_id), "dddd")
     da = await obj.get_one_email(Otp, dict(user_id=body.user_id))
     ltime = da.created_at + timedelta(seconds=da.expire_time)
     if ltime > datetime.now():

@@ -38,6 +38,7 @@ RUN pip uninstall -y  flask_openapi3
 RUN pip install passlib
 RUN pip install flask_mailing
 RUN pip install requests
+RUN pip install -U flask-cors
 RUN pip install "git+https://github.com/rajat45mishra/flaskopenapi.git#egg=flask-openapi3"
 EXPOSE 8000
 CMD ["uvicorn","infrastructure.server.app.wsgi:app","--workers","4","--host","0.0.0.0","--port","8000"]

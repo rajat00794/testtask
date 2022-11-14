@@ -37,5 +37,7 @@ class Config:
             return f"{self.driver}://{self.user}:{self.password}@{self.host}/{self.dbname}/?ssl=true&ssl_cert_reqs=CERT_NONE"
 
         elif self.dbname == str(None):
-            return f"{self.driver}://{self.user}:{self.password}@{self.host}:{self.port}"
+            return (
+                f"{self.driver}://{self.user}:{self.password}@{self.host}:{self.port}"
+            )
         return f"{self.driver}://{self.user}:{self.password}@{self.host}:{self.port}"

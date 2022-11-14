@@ -10,13 +10,14 @@ from flask_openapi3 import Info, Tag
 from flask_openapi3 import OpenAPI
 from infrastructure.server.app.application.service import str_import
 from flask_mailing import Mail
+from flask_cors import CORS
 
 # Globally accessible libraries
-logging.config.dictConfig(yaml.safe_load(open("logging.conf", encoding="utf-8")))
-logfile = logging.getLogger("file")
-logconsole = logging.getLogger("console")
-logfile.debug("Debug FILE")
-logconsole.debug("Debug CONSOLE")
+# logging.config.dictConfig(yaml.safe_load(open("logging.conf", encoding="utf-8")))
+# logfile = logging.getLogger("file")
+# logconsole = logging.getLogger("console")
+# logfile.debug("Debug FILE")
+# logconsole.debug("Debug CONSOLE")
 info = Info(title="Test API", version="1.0.0")
 user_tag = Tag(name="user", description="user")
 static_root = (
@@ -30,6 +31,7 @@ send_mail = Mail()
 def init_app(config: Optional[str] = None):
     """Initialize the core application."""
     app = OpenAPI(__name__, info=info, instance_relative_config=False)
+    CORS(app)
     if config is None:
         app.config.from_object("infrastructure.server.app.config.Config")
     else:

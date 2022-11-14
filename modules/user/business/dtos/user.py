@@ -3,7 +3,7 @@ import re
 from typing import Optional
 from xml.dom import ValidationErr
 
-from odmantic import Model,Field
+from odmantic import Model, Field
 from pydantic import validator
 
 
@@ -22,12 +22,12 @@ class User(Model):
 
     firstname: str
     lastname: str
-    email: str 
+    email: str
     password: str
     phone: str
     verfiy: bool = False
     role: Optional[str] = None
-    unique_fields:list=["email","phone"]
+    unique_fields: list = ["email", "phone"]
 
     @validator("email")
     def email_str(cls, email):

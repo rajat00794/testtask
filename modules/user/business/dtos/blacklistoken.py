@@ -10,4 +10,4 @@ class BlacklistToken(Model):
     """
 
     token: str
-    unique_fields:list=[]
+    unique_fields: list = []

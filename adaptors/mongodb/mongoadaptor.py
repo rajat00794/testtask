@@ -6,6 +6,7 @@ from common_utilities.file_handler import FileUpload
 from bson.objectid import ObjectId
 from adaptors.mongodb.errors import Errors
 
+
 class DataBaseManager:
     """_summary_"""
 
@@ -26,11 +27,61 @@ class DataBaseManager:
         Returns:
             _type_: _description_
         """
-        data = await self.engine.save_all(instance)
-        return data
+        return await self.unique_id(instance)
 
-    async def errors(self,msg,data,instance):
-        return Errors(error=f"{msg}{data.id}",model=instance.__class__.__name__)
+    async def errors(self, msg, data, instance):
+        """_summary_
+
+        Args:
+            msg (_type_): _description_
+            data (_type_): _description_
+            instance (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
+        return Errors(error=f"{msg},{data}", model=instance.__class__.__name__)
+
+    async def unique_id(self, instance):
+        """_summary_
+
+        Args:
+            instance (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
+        finaldata = None
+        if isinstance(instance,list):
+            finaldata = []
+            for x in instance:
+                data = None
+                if x.unique_fields != []:
+                    for i in x.unique_fields:
+                        data = await self.get_one_email(x.__class__, {i: getattr(x, i)})
+                    if data is None:
+                        data = await self.engine.save(x)
+                    else:
+                        data = await self.errors("record already exist", data, instance)
+                else:
+                    data = await self.engine.save(x)
+                finaldata.append(data)
+            return finaldata
+        else:
+            data = None
+            if instance.unique_fields != []:
+                for i in instance.unique_fields:
+                    data = await self.get_one_email(
+                        instance.__class__, {i: getattr(instance, i)}
+                    )
+                if data is None:
+                    data = await self.engine.save(instance)
+                else:
+                    data = await self.errors("record already exist", data, instance)
+            else:
+                data = await self.engine.save(instance)
+            return data
+
     async def save(self, instance: object):
         """_summary_
 
@@ -40,17 +91,7 @@ class DataBaseManager:
         Returns:
             _type_: _description_
         """
-        data=None
-        if instance.unique_fields!=[]:
-            for i in instance.unique_fields:
-                data=await self.get_one_email(instance.__class__,{i:getattr(instance,i)})
-            if data is None:
-                data = await self.engine.save(instance)
-            else:
-                data = await self.errors("record already exist",data,instance)
-        else:
-            data = await self.engine.save(instance)
-        return data
+        return await self.unique_id(instance)
 
     async def update_one(self, instance: object, value: dict, update: dict):
         """_summary_
@@ -76,15 +117,15 @@ class DataBaseManager:
                     setattr(data, key, val)
                     await self.save(data)
             else:
-                raise Exception("object not found")
+                data = await self.errors("object not found", data, instance)
         else:
             data = await self.get_one(instance, value)
             if data:
                 for k, vals in update.items():
-                    if hasattr(data,k):
-                        setattr(data,k,vals)
+                    if hasattr(data, k):
+                        setattr(data, k, vals)
                     else:
-                        print(f"attribute not found {k}")
+                        data = await self.errors("attribute not found", data, instance)
                     await self.save(data)
         return data
 
@@ -101,10 +142,12 @@ class DataBaseManager:
         Returns:
             _type_: _description_
         """
+        updatedata = []
         for i in value:
             for j in update:
-                await self.update_one(instance, i, j)
-        return dict(status=update)
+                data = await self.update_one(instance, i, j)
+                updatedata.append(data)
+        return updatedata
 
     async def delete_one(self, instance: object, value: dict):
         """_summary_
@@ -127,7 +170,7 @@ class DataBaseManager:
             if data:
                 data = await self.engine.delete(data)
             else:
-                raise Exception("object not found")
+                data = await self.errors("object not found", data, instance)
         else:
             data = await self.get_one(instance, value)
             if data:
@@ -155,7 +198,7 @@ class DataBaseManager:
                 res.append(data)
                 data = await self.engine.delete(data)
             else:
-                raise Exception("object not found")
+                data = await self.errors("object not found", data, instance)
         return res
 
     async def get_one(self, instance: object, value: dict):

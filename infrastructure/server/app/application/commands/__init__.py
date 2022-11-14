@@ -18,8 +18,8 @@ def create(name):
     """loads data into database from json file"""
     os.chdir("fixture")
     os.chdir("AppFixtures")
-    filesname = os.listdir('.')
-    filesname=[x for x in filesname if x.startswith(name)]
+    filesname = os.listdir(".")
+    filesname = [x for x in filesname if x.startswith(name)]
     dab = obj_graph.provide(DataBaseManager)
     os.chdir("../..")
     file = open("dtos.json", "rb")

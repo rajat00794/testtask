@@ -14,4 +14,4 @@ class Otp(Model):
     user_id: str
     created_at: datetime
     expire_time: Optional[int] = 300
-    unique_fields:list=[]
+    unique_fields: list = []

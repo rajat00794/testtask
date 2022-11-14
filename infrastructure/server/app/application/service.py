@@ -1,7 +1,7 @@
 """infrastructure utilies for server use"""
 import json
 from functools import wraps
-from typing import Any,Optional
+from typing import Any, Optional
 import pydantic
 from flask import request
 from jwt.exceptions import ExpiredSignatureError
@@ -59,7 +59,7 @@ class Path(pydantic.BaseModel):
 
 
 class ResetPassword(pydantic.BaseModel):
-    email:str
+    email: str
 
 
 class Response(pydantic.BaseModel):
@@ -95,7 +95,7 @@ class ResponseHandler:
         Returns:
             _type_: _description_
         """
-        print(status_code,self.data,"erferferferferferfe")
+        print(status_code, self.data, "erferferferferferfe")
         if isinstance(self.data, list):
             return Response(
                 data=[json.loads(x.json()) for x in self.data], status_code=status_code

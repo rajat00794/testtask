@@ -47,11 +47,14 @@ def test_user_get():
         # assert response.status_code == 308
         # print(response.data,"dwdwdwdwdw")
         objid = json.loads(response.data)["data"][0]["email"]
-        print(objid,"DCD")
+        print(objid, "DCD")
         response = test_client.post(
-            f"/api/user/password_reset/", headers=dict(
+            f"/api/user/password_reset/",
+            headers=dict(
                 content_type="application/json", Authorization="Bearer {}".format(token)
-            ),json=json.dumps(dict(email=objid)))
+            ),
+            json=json.dumps(dict(email=objid)),
+        )
         assert response.status_code == 206
         # objid = json.loads(response.data)["data"]["id"]
         # password="test123"
@@ -64,21 +67,22 @@ def test_user_get():
         # assert response.status_code == 206
         objid = json.loads(response.data)["data"]
         response = test_client.post(
-            f"/api/user/sendotp/",headers=dict(
+            f"/api/user/sendotp/",
+            headers=dict(
                 content_type="application/json", Authorization="Bearer {}".format(token)
-            ),json=json.dumps(dict(email=objid['email'],phone="8160201174",user_id=objid['id']))
+            ),
+            json=json.dumps(
+                dict(email=objid["email"], phone="8160201174", user_id=objid["id"])
+            ),
         )
         assert response.status_code == 200
-        objid = json.loads(response.data)['data']
+        objid = json.loads(response.data)["data"]
         print(objid)
         response = test_client.post(
-            f"/api/user/verifyotp/",headers=dict(
+            f"/api/user/verifyotp/",
+            headers=dict(
                 content_type="application/json", Authorization="Bearer {}".format(token)
-            ),json=json.dumps(dict(user_id=objid['user_id'],otp=int(objid['otp'])))
+            ),
+            json=json.dumps(dict(user_id=objid["user_id"], otp=int(objid["otp"]))),
         )
         assert response.status_code == 206
-
-
-
-
-
