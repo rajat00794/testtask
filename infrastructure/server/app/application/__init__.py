@@ -31,7 +31,7 @@ send_mail = Mail()
 def init_app(config: Optional[str] = None):
     """Initialize the core application."""
     app = OpenAPI(__name__, info=info, instance_relative_config=False)
-    CORS(app)
+    CORS(app,origins=["http://localhost:3000"])
     if config is None:
         app.config.from_object("infrastructure.server.app.config.Config")
     else:
