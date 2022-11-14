@@ -35,7 +35,6 @@ def init_app(config: Optional[str] = None):
     else:
         app.config.from_object(config)
     # Initialize Plugins
-    send_mail.init_app(app)
     with app.app_context():
         # Include our Routes
         # Register Blueprints
