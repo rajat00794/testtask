@@ -247,12 +247,13 @@ async def password_reset(body: ResetPassword):
             ).response(404),
             404,
         )
-    data = dict(
-        subject="te",
-        recipients=["rajatm@thoughtwin.com"],
-        body=f"here is your password reset link: {request.base_url}/user/password_confirm/{Token().generate_acess_token(res)}",
+    awt = await email_sender(
+        "rajatm@thoughtwin.com",
+        **{
+            "subject": "te",
+            "text": f"here is your password reset link: {request.base_url}/user/password_confirm/{Token().generate_acess_token(res)}",
+        },
     )
-    awt = await email_sender(send_mail, **data)
     return ResponseHandler(request, res).response(206), 206
 
 
@@ -283,17 +284,11 @@ async def send_otp_email_phone(body: OtpSender):
     data = Otp(otp=otp, user_id=body.user_id, created_at=datetime.now())
     obj = obj_graph.provide(DataBaseManager)
     da = await obj.save(data)
-    # data = dict(
-    #     subject=f"One time password for user{body.user_id}",
-    #     recipients=[body.email],
-    #     body=f"your one time password is {otp}",
-    # )
-    # awt = await email_sender(send_mail, **data)
-    # print(awt)
-    # res = {}
-    # res["email"] = awt
+    awt = await email_sender(
+        "rajatm@thoughtwin.com", **{"subject": "otp", "text": f"otp:{otp}"}
+    )
     try:
-        send_phone_otp(body.phone)
+        send_phone_otp(body.phone, otp)
     except Exception as a:
         res["phone"] = a
     return ResponseHandler(request, da).response(200), 200

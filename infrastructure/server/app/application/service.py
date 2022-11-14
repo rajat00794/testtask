@@ -15,7 +15,8 @@ from modules.user.enterprise.services.user import UserServices
 import importlib
 from flask_mailing import Message
 import random as r
-from adaptors.mongodb.mongoadaptor import DataBaseManager
+from adaptors.sms_service.sms import Smsservice
+from adaptors.email_service.email import EmailMessage
 import requests
 import os
 
@@ -259,16 +260,10 @@ def str_import(module, classname):
 
 
 async def email_sender(mail, **kwargs):
-    message = Message(
-        subject=kwargs.get("subject"),
-        recipients=kwargs.get("recipients"),
-        body=kwargs.get("body"),
+    email = obj_graph.provide(EmailMessage)
+    return await email.send_mail_async(
+        [mail], kwargs.get("subject"), kwargs.get("text")
     )
-    try:
-        return await mail.send_message(message), 200
-    except Exception as E:
-
-        return E
 
 
 def otp_generator():
@@ -280,12 +275,10 @@ def otp_generator():
     otp = ""
     for i in range(4):
         otp += str(r.randint(1, 9))
-    print("Your One Time Password is ")
-    print(otp)
     return int(otp)
 
 
-def send_phone_otp(phone):
+def send_phone_otp(phone, msg):
     """_summary_
 
     Args:
@@ -294,9 +287,5 @@ def send_phone_otp(phone):
     Returns:
         _type_: _description_
     """
-    url = os.getenv("sms_url")
-    api_key = os.getenv("api_key")
-    api_ = f"{url}{api_key}/:{phone}"
-    print(api_)
-    respo = requests.get(api_)
-    return respo.content.decode("utf-8")
+    sms = obj_graph.provide(Smsservice)
+    return sms.send_msg(phone, msg)
