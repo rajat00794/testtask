@@ -52,7 +52,7 @@ class DataBaseManager:
             _type_: _description_
         """
         finaldata = None
-        if isinstance(instance,list):
+        if isinstance(instance, list):
             finaldata = []
             for x in instance:
                 data = None

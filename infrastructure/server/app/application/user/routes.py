@@ -238,10 +238,15 @@ async def password_reset(body: ResetPassword):
         obj = await service.get(User, objectid=dict(email=body.email))
     except Exception as Ex:
         return Ex, 404
-    if isinstance(obj,User):
+    if isinstance(obj, User):
         res = dict(email=obj.email, id=str(obj.id))
     else:
-        return ResponseHandler(request, service.dbmanager.errors("object not found",obj,User)).response(404), 404
+        return (
+            ResponseHandler(
+                request, service.dbmanager.errors("object not found", obj, User)
+            ).response(404),
+            404,
+        )
     data = dict(
         subject="te",
         recipients=["rajatm@thoughtwin.com"],
