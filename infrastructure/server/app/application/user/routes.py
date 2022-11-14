@@ -4,7 +4,7 @@ from datetime import datetime
 from datetime import timedelta
 from flask import request
 from flask_openapi3 import APIBlueprint
-from infrastructure.server.app.application import user_tag, send_mail
+from infrastructure.server.app.application import user_tag
 from infrastructure.server.app.application.service import (
     Path,
     ResetPassword,

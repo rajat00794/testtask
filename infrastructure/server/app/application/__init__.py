@@ -9,7 +9,6 @@ import yaml
 from flask_openapi3 import Info, Tag
 from flask_openapi3 import OpenAPI
 from infrastructure.server.app.application.service import str_import
-from flask_mailing import Mail
 from flask_cors import CORS
 
 # Globally accessible libraries
@@ -25,7 +24,6 @@ static_root = (
     .parent.parent.parent.joinpath("static")
     .joinpath("build")
 )
-send_mail = Mail()
 
 
 def init_app(config: Optional[str] = None):

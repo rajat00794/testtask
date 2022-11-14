@@ -12,13 +12,11 @@ async def setup_project_with_user():
     from infrastructure.shared_di.di import obj_graph
     from modules.user.business.dtos.permission import Permission
     from modules.user.business.dtos.role import Role
-
     db = obj_graph.provide(DataBaseManager)
     permissions = await db.get_all(Permission)
     permissions = [str(x.id) for x in permissions]
     roles = await db.get_all(Role)
     roles = [str(x.id) for x in roles]
-    print(roles)
     for i in roles:
         data = await db.update_one(Role, dict(id=i), dict(permissions=permissions))
         print(f"done {i}", data)
