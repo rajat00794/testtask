@@ -16,19 +16,36 @@ class LoadComponents:
 
     async def modules(self, **kwargs):
         if "type" in list(kwargs.keys()) and kwargs["type"] == "modules":
-            data = {
-                "from": kwargs.get("from"),
-                "name": kwargs.get("name"),
-                "type": kwargs.get("type"),
-            }
+            if "path" not in list(kwargs.keys()):
+                data = {
+                    "from": kwargs.get("from"),
+                    "name": kwargs.get("name"),
+                    "type": kwargs.get("type"),
+                    }
+            else:
+                data = {
+                    "from": kwargs.get("from"),
+                    "name": kwargs.get("name"),
+                    "type": kwargs.get("type"),
+                    "path":kwargs.get("type"),
+                    }
+
             resp = await self.from_(**data)
             return resp
         elif "type" in list(kwargs.keys()) and kwargs["type"] == "adaptors":
-            data = {
-                "from": kwargs.get("from"),
-                "name": kwargs.get("name"),
-                "type": kwargs.get("type"),
-            }
+            if "path" not in list(kwargs.keys()):
+                data = {
+                    "from": kwargs.get("from"),
+                    "name": kwargs.get("name"),
+                    "type": kwargs.get("type"),
+                    }
+            else:
+                data = {
+                    "from": kwargs.get("from"),
+                    "name": kwargs.get("name"),
+                    "type": kwargs.get("type"),
+                    "path":kwargs.get("type"),
+                    }
             resp = await self.from_(**data)
             return resp
 
