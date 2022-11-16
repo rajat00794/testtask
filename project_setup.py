@@ -12,6 +12,7 @@ async def setup_project_with_user():
     from infrastructure.shared_di.di import obj_graph
     from modules.user.business.dtos.permission import Permission
     from modules.user.business.dtos.role import Role
+
     db = obj_graph.provide(DataBaseManager)
     permissions = await db.get_all(Permission)
     permissions = [str(x.id) for x in permissions]
