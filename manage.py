@@ -3,6 +3,8 @@
 import click
 from typing import Dict
 import json
+from framework.load import LoadComponents
+import asyncio
 
 
 def formet_args(**kwargs):
@@ -84,6 +86,15 @@ def framework_commands(
         load=load, create=create, generator=generator, deployment=deployment
     )
     formateded_args = [x for x in formateded_args if x[list(x.keys())[0]] != []]
+    for io in formateded_args:
+        if "load" in io.keys():
+            gross_args = io["load"]
+            for iu in gross_args:
+                for iw in iu.keys():
+                    if iw.startswith("load"):
+                        loadm = LoadComponents()
+                        data = asyncio.run(loadm.load(**iu[iw]))
+                        print(data)
     click.echo(formateded_args)
 
 
