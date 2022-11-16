@@ -95,7 +95,7 @@ class LoadComponents:
                 await self.install(
                     self.FRAMEWORK_REGISTRY
                     + kwargs.get("type")
-                    + "&subdirectory="
+                    + "/"
                     + kwargs.get("name")
                 )
             except Exception as e:
@@ -116,7 +116,7 @@ class LoadComponents:
                 await self.install(
                     self.FRAMEWORK_REGISTRY
                     + kwargs.get("type")
-                    + "&subdirectory="
+                    + "/"
                     + kwargs.get("name")
                 )
             except Exception as e:
