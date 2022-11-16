@@ -1,1 +1,1 @@
-{"FRAMEWORK_REGISTRY":"git+https://github.com/rajat00794/testtask.git@main#egg=cobraframework@subdirectory="}
+{"FRAMEWORK_REGISTRY":"git+https://github.com/rajat00794/testtask.git@main#subdirectory="}
